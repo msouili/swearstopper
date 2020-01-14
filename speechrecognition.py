@@ -25,7 +25,7 @@ while True:
         print('Done!')
 
     try:
-        text = r.recognize_google(audio) or '123'
+        text = r.recognize_google(audio)
         print(text)
     
     except:
