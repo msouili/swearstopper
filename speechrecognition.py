@@ -5,42 +5,35 @@
 import speech_recognition as sr
 import mysql.connector
 from mysql.connector import Error
+import RPi.GPIO as GPIO
+import time
 
-swearwords = []
+GPIO.setmode(GPIO.BCM)
 
-def getSwearWords(result):
-    for item in result:
-        swearwords.append(item[0])
-    for word in swearwords:
-        print(word)
-    
-try:
-    connection = mysql.connector.connect(host='127.0.0.1', database='swearstopper', user='root', password='root')
-    if connection.is_connected():
-        db_Info = connection.get_server_info()
-        print("Connected to MySQL Server version ", db_Info)
-        cursor = connection.cursor(buffered=True)
-        query = cursor.execute("SELECT * FROM forbidden_words")
-        result = cursor.fetchall()
-        getSwearWords(result)
+GPIO.setup(23, GPIO.OUT)
 
-except Error as e:
-    print("Error while connecting to MySQL", e)
-finally:
-    if (connection.is_connected()):
-        cursor.close()
-        connection.close()
-        print("MySQL connection is closed")
+GPIO.setup(23, GPIO.LOW)
+
+swearwords = ['hello']
 
 r = sr.Recognizer()
 while True:
     with sr.Microphone() as source:
         print('Say Something!')
+        r.adjust_for_ambient_noise(source)
         audio = r.listen(source)
         print('Done!')
 
-    text = r.recognize_google(audio)
-    print(text)
+    try:
+        text = r.recognize_google(audio) or '123'
+        print(text)
+    
+    except:
+        print("Ich hab dich nicht verstanden")
 
     if any(word in text for word in swearwords):
         print('stop swearing!')
+        GPIO.output(23, GPIO.HIGH)
+        time.sleep(0.5)
+        GPIO.output(23, GPIO.LOW)
+    
