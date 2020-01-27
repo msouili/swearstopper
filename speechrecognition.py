@@ -4,6 +4,7 @@
 # brew install portaudio & pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
 import speech_recognition as sr
 
+swearwords = ['fuck', 'penis', 'hello']
 r = sr.Recognizer()
 with sr.Microphone() as source:
     print ('Say Something!')
@@ -12,3 +13,6 @@ with sr.Microphone() as source:
     
 text = r.recognize_google(audio)
 print (text)
+
+if any(word in text for word in swearwords):
+    print ('stop swearing!')
