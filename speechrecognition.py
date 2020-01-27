@@ -7,12 +7,12 @@ import speech_recognition as sr
 swearwords = ['fuck', 'penis', 'hello']
 r = sr.Recognizer()
 with sr.Microphone() as source:
-    print ('Say Something!')
+    print('Say Something!')
     audio = r.listen(source)
-    print ('Done!')
+    print('Done!')
     
 text = r.recognize_google(audio)
-print (text)
+print(text)
 
 if any(word in text for word in swearwords):
-    print ('stop swearing!')
+    print('stop swearing!')
