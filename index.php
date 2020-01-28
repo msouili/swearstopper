@@ -2,6 +2,8 @@
 require_once ('configuration.php');
 
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -11,37 +13,48 @@ require_once ('configuration.php');
         <link rel="stylesheet" href="CSS/main.css">
         <script src="script.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Electrolize&display=swap" rel="stylesheet">
         <title>SwearStopper</title>
     </head>
     <body>
-        <div class="wrapper">
-            <div id="cont" class="container">
-                <div id="" class="row" style="margin-top: 5%">
-                    <form method="POST">
-                        <h2>Schlagwörter</h2>
-                        <input name="title" type="input" placeholde="Schlagwort eingeben">
-                        <!--textarea id="title" name="title" placeholder="Schlagwort" cols="25" rows="1"></textarea-->
-                        <input id="send" class="button-primary" type="submit" value="Absenden">
-                    </form>
-                    <div>
-                        <?php #outputDatabase();?>
+        <section class="form">
+            <div class="form-container">
+                <form method="POST">
+                    <div class="form__input--container">
+                        <input type="text" name="term" placeholder="Schlagwort eingeben">
                     </div>
-                </div>
+                    <input class="form__submit" type="submit" value="Hinzufügen">
+                </form>
+                <table>
+                    <tr>
+                        <th>Schlagwort</th>
+                    </tr>
+                    <?php
+                        $sqlOutput = "SELECT forb_word FROM forbidden_words";
+                        $result = $conn->query($sqlOutput);
+                    
+                        if ($result->num_rows > 0){
+                            //output data of each row
+                            while ($row = $result->fetch_assoc()){
+                                echo "<tr><th>" . $row["forb_word"] . "</tr></th>";
+                            }
+                        }else{
+                                echo "0 Results";
+                            }
+                        $conn->close();
+                    ?>
+                </table>
             </div>
-        </div>
+        </section>
     </body>
 </html>
 
 <?php
 
-
-
-
-
-if (isset($_POST["title"])){
+if (isset($_POST["term"])){
     
     //query 
-    $input = $_POST["title"];
+    $input = $_POST["term"];
     $sqlInsert = "INSERT INTO forbidden_words (forb_word) VALUES ('$input')";
 
     if ($conn->query($sqlInsert) === TRUE){
@@ -53,20 +66,6 @@ if (isset($_POST["title"])){
 
 }
 
-#function outputDatabase(){
-    $sqlOutput = "SELECT forb_word FROM forbidden_words";
-    $result = $conn->query($sqlOutput);
-
-    if ($result->num_rows > 0){
-        //output data of each row
-        while ($row = $result->fetch_assoc()){
-            echo "Verbotenes Wort: " . $row["forb_word"] . "<br>";
-        }
-    }else{
-            echo "0 Results";
-        }
-    $conn->close();
-#}
 
 
 function debugger($a){
