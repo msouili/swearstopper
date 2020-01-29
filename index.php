@@ -21,7 +21,7 @@ require_once ('configuration.php');
             <div class="form-container">
                 <form method="POST">
                     <div class="form__input--container">
-                        <input type="text" name="term" placeholder="Schlagwort eingeben">
+                        <input type="text" name="title" placeholder="Schlagwort eingeben">
                     </div>
                     <input class="form__submit" type="submit" value="Hinzufügen">
                 </form>
@@ -36,12 +36,15 @@ require_once ('configuration.php');
                         if ($result->num_rows > 0){
                             //output data of each row
                             while ($row = $result->fetch_assoc()){
-                                echo "<tr><th>" . $row["forb_word"] . "</tr></th>";
+                            ?>
+                            <tr><th> <?php echo $row["forb_word"]?> <td><a href="<?php 
+                                                                                $delete = 10;
+                                                                                $sql = "DELETE FROM `forbidden_words` WHERE `forbidden_words` = 10"; ?>" data-alias="<?php echo $row["forb_word"]?>"><b>x</b></a></td></th></tr>
+                            <?php
                             }
                         }else{
                                 echo "0 Results";
                             }
-                        $conn->close();
                     ?>
                 </table>
             </div>
@@ -51,18 +54,26 @@ require_once ('configuration.php');
 
 <?php
 
-if (isset($_POST["term"])){
+if (isset($_POST["title"])){
     
     //query 
-    $input = $_POST["term"];
+    $input = $_POST["title"];
     $sqlInsert = "INSERT INTO forbidden_words (forb_word) VALUES ('$input')";
+    $sqlFind = "SELECT '$input' FROM forbidden_words";
 
-    if ($conn->query($sqlInsert) === TRUE){
-        echo "Neuer Eintrag erfolgreich erstellt <br>";
+    $resultFind = $conn->query($sqlFind);
+    
+    if($resultFind->num_rows > 1){
+        echo "Eintrag bereits vorhanden";
     }else{
-        echo "Error: " . $sqlInsert . "<br>" . $conn->error;
-    }
 
+        if ($conn->query($sqlInsert) === TRUE){
+            $return = "Neuer Eintrag erfolgreich erstellt <br>";
+            return $return;
+        }else{
+            echo "Error: " . $sqlInsert . "<br>" . $conn->error;
+        }
+    }
 
 }
 
